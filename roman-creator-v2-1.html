@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ÉcriVerse Pro — Studio Littéraire IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0a0a12;
+  --bg2: #0f0f1c;
+  --surface: #13131f;
+  --surface2: #1a1a2e;
+  --border: rgba(255,255,255,0.07);
+
+  --violet: #7c3aed;
+  --violet-l: #a78bfa;
+  --cyan: #06b6d4;
+  --cyan-l: #67e8f9;
+  --rose: #f43f5e;
+  --rose-l: #fb7185;
+  --amber: #f59e0b;
+  --amber-l: #fcd34d;
+  --emerald: #10b981;
+  --emerald-l: #6ee7b7;
+
+  --text: #f1f0ff;
+  --text2: #a09fbe;
+  --text3: #5c5b7a;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ANIMATED BACKGROUND */
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 0% 0%, rgba(124,58,237,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(6,182,212,0.15) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 80% 10%, rgba(244,63,94,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 30% at 20% 80%, rgba(16,185,129,0.08) 0%, transparent 50%);
+  pointer-events:none;
+}
+
+body::after {
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.012) 40px, rgba(255,255,255,0.012) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.012) 40px, rgba(255,255,255,0.012) 41px);
+  pointer-events:none;
+}
+
+/* HEADER */
+header {
+  position:relative; z-index:10;
+  padding: 2.5rem 2rem 0;
+  display:flex; align-items:center; justify-content:space-between;
+  max-width:1400px; margin:0 auto;
+}
+
+.logo {
+  display:flex; align-items:center; gap:1rem;
+}
+
+.logo-icon {
+  width:44px; height:44px;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.3rem;
+  box-shadow: 0 0 30px rgba(124,58,237,0.4);
+}
+
+.logo-text {
+  font-family:'Syne',sans-serif;
+  font-size:1.7rem;
+  font-weight:800;
+  background: linear-gradient(90deg, var(--violet-l), var(--cyan-l));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.logo-sub {
+  font-size:0.65rem;
+  font-weight:600;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color: var(--violet-l);
+  opacity:0.6;
+}
+
+.header-badge {
+  display:flex; align-items:center; gap:0.5rem;
+  padding:0.4rem 1rem;
+  background: rgba(124,58,237,0.15);
+  border:1px solid rgba(124,58,237,0.3);
+  border-radius:999px;
+  font-size:0.72rem;
+  font-weight:600;
+  letter-spacing:0.08em;
+  color:var(--violet-l);
+}
+
+/* HERO */
+.hero {
+  position:relative; z-index:5;
+  text-align:center;
+  padding: 3rem 2rem 2rem;
+  max-width:800px;
+  margin:0 auto;
+}
+
+.hero h1 {
+  font-family:'DM Serif Display', serif;
+  font-size: clamp(2.8rem,6vw,5rem);
+  font-style:italic;
+  line-height:1.1;
+  margin-bottom:1rem;
+  background: linear-gradient(135deg, #fff 0%, var(--violet-l) 40%, var(--cyan-l) 70%, #fff 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hero p {
+  font-size:1.1rem;
+  color: var(--text2);
+  max-width:520px;
+  margin:0 auto 2rem;
+  line-height:1.7;
+}
+
+/* AUDIENCE TABS */
+.audience-tabs {
+  position:relative; z-index:5;
+  display:flex; justify-content:center; gap:0.6rem;
+  flex-wrap:wrap;
+  max-width:900px; margin:0 auto 2.5rem;
+  padding:0 1.5rem;
+}
+
+.aud-tab {
+  padding:0.5rem 1.2rem;
+  border-radius:999px;
+  border:1.5px solid var(--border);
+  background: var(--surface);
+  color:var(--text2);
+  font-size:0.8rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.25s;
+  display:flex; align-items:center; gap:0.4rem;
+  font-family:'DM Sans',sans-serif;
+}
+
+.aud-tab:hover { border-color:rgba(255,255,255,0.2); color:var(--text); }
+
+.aud-tab.active-enfant { background:rgba(16,185,129,0.15); border-color:var(--emerald); color:var(--emerald-l); }
+.aud-tab.active-ado { background:rgba(6,182,212,0.15); border-color:var(--cyan); color:var(--cyan-l); }
+.aud-tab.active-adulte { background:rgba(124,58,237,0.15); border-color:var(--violet); color:var(--violet-l); }
+.aud-tab.active-senior { background:rgba(245,158,11,0.15); border-color:var(--amber); color:var(--amber-l); }
+.aud-tab.active-pro { background:rgba(244,63,94,0.15); border-color:var(--rose); color:var(--rose-l); }
+
+/* MAIN GRID */
+.app-container {
+  position:relative; z-index:5;
+  max-width:1400px;
+  margin:0 auto;
+  padding:0 1.5rem 5rem;
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:1.5rem;
+}
+
+@media(max-width:1100px) { .app-container { grid-template-columns:1fr 1fr; } }
+@media(max-width:700px) { .app-container { grid-template-columns:1fr; } }
+
+/* PANELS */
+.panel {
+  background: var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:1.75rem;
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.3s;
+}
+
+.panel:hover { border-color:rgba(255,255,255,0.12); }
+
+.panel-glow {
+  position:absolute; top:-1px; left:0; right:0; height:2px;
+  border-radius:16px 16px 0 0;
+}
+.glow-violet { background:linear-gradient(90deg,transparent,var(--violet),transparent); }
+.glow-cyan { background:linear-gradient(90deg,transparent,var(--cyan),transparent); }
+.glow-rose { background:linear-gradient(90deg,transparent,var(--rose),transparent); }
+.glow-amber { background:linear-gradient(90deg,transparent,var(--amber),transparent); }
+.glow-emerald { background:linear-gradient(90deg,transparent,var(--emerald),transparent); }
+
+.panel-wide { grid-column:1/-1; }
+@media(max-width:700px){ .panel-wide { grid-column:1; } }
+
+.panel-title {
+  font-family:'Syne',sans-serif;
+  font-size:1rem;
+  font-weight:700;
+  letter-spacing:0.02em;
+  display:flex; align-items:center; gap:0.6rem;
+  margin-bottom:1.4rem;
+}
+
+.panel-title .icon {
+  width:30px; height:30px;
+  border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.9rem;
+  flex-shrink:0;
+}
+
+.icon-violet { background:rgba(124,58,237,0.2); }
+.icon-cyan { background:rgba(6,182,212,0.2); }
+.icon-rose { background:rgba(244,63,94,0.2); }
+.icon-amber { background:rgba(245,158,11,0.2); }
+.icon-emerald { background:rgba(16,185,129,0.2); }
+
+/* LABELS */
+label {
+  display:block;
+  font-size:0.7rem;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text3);
+  margin-bottom:0.4rem;
+}
+
+/* INPUTS */
+input[type="text"], input[type="number"], textarea, select {
+  width:100%;
+  background: var(--bg2);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;
+  padding:0.65rem 0.9rem;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;
+  transition:border-color 0.2s, box-shadow 0.2s;
+  outline:none;
+  resize:vertical;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color:rgba(124,58,237,0.5);
+  box-shadow:0 0 0 3px rgba(124,58,237,0.1);
+}
+
+select option { background:var(--bg); }
+
+textarea { min-height:85px; line-height:1.6; }
+
+.form-group { margin-bottom:1.1rem; }
+
+.input-row {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0.8rem;
+}
+
+/* VOICE WRAP */
+.input-voice-wrap { display:flex; align-items:flex-start; gap:0.4rem; }
+.input-voice-wrap input, .input-voice-wrap textarea { flex:1; min-width:0; }
+
+.voice-btn {
+  flex-shrink:0;
+  width:34px; height:34px;
+  margin-top:1px;
+  background:rgba(124,58,237,0.1);
+  border:1px solid rgba(124,58,237,0.3);
+  border-radius:50%;
+  color:var(--violet-l);
+  font-size:0.85rem;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.voice-btn:hover { background:rgba(124,58,237,0.25); transform:scale(1.08); box-shadow:0 0 14px rgba(124,58,237,0.3); }
+.voice-btn.textarea-btn { align-self:flex-start; }
+
+/* SLIDER */
+.slider-group { margin-bottom:1.1rem; }
+.slider-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.4rem; }
+.slider-val { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:700; color:var(--violet-l); }
+
+input[type="range"] {
+  width:100%; -webkit-appearance:none;
+  height:4px;
+  background:linear-gradient(90deg, var(--violet) var(--p,20%), rgba(255,255,255,0.1) var(--p,20%));
+  border-radius:2px; outline:none; cursor:pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none;
+  width:16px; height:16px;
+  background:var(--violet-l);
+  border-radius:50%;
+  box-shadow:0 0 12px rgba(167,139,250,0.5);
+  transition:transform 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform:scale(1.3); }
+
+.page-labels { display:flex; justify-content:space-between; font-size:0.62rem; color:var(--text3); margin-top:0.3rem; letter-spacing:0.05em; }
+
+/* CHAPTER LIST */
+.chapter-item {
+  display:flex; align-items:center; gap:0.5rem;
+  padding:0.45rem 0.7rem;
+  background:var(--bg2);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px;
+  margin-bottom:0.4rem;
+  transition:border-color 0.2s;
+}
+.chapter-item:hover { border-color:rgba(124,58,237,0.3); }
+.chapter-num { font-family:'Syne',sans-serif; font-size:0.62rem; font-weight:700; color:var(--violet-l); opacity:0.5; min-width:22px; }
+.chapter-item input { flex:1; background:transparent; border:none; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.88rem; outline:none; padding:0; }
+.chapter-item input::placeholder { color:var(--text3); }
+.chapter-del { background:none; border:none; color:var(--text3); cursor:pointer; font-size:0.85rem; transition:color 0.2s; }
+.chapter-del:hover { color:var(--rose); }
+
+/* CHARACTER GRID */
+.char-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+.char-card { border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:0.75rem; background:var(--bg2); position:relative; }
+.char-card input { font-size:0.86rem; padding:0.4rem 0.6rem; margin-bottom:0.4rem; border-radius:6px; }
+.char-card .char-del { position:absolute; top:0.5rem; right:0.5rem; background:none; border:none; color:var(--text3); cursor:pointer; font-size:0.8rem; transition:color 0.2s; }
+.char-card .char-del:hover { color:var(--rose); }
+
+/* BTN ADD */
+.btn-add {
+  width:100%; padding:0.45rem;
+  border:1px dashed rgba(255,255,255,0.12);
+  background:transparent; color:var(--text3);
+  font-family:'DM Sans',sans-serif; font-size:0.72rem;
+  font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+  cursor:pointer; border-radius:8px; transition:all 0.2s; margin-top:0.25rem;
+}
+.btn-add:hover { border-color:var(--violet-l); color:var(--violet-l); background:rgba(124,58,237,0.08); }
+
+/* COVER SECTION */
+.cover-preview-wrap {
+  display:grid; grid-template-columns:200px 1fr; gap:1.5rem; align-items:start;
+}
+
+@media(max-width:500px){ .cover-preview-wrap { grid-template-columns:1fr; } }
+
+.cover-canvas-wrap {
+  aspect-ratio:2/3;
+  background:var(--bg2);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  overflow:hidden;
+  position:relative;
+  /* needed so absolute children (canvas, placeholder, loading) position correctly */
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  transition:border-color 0.3s;
+}
+.cover-canvas-wrap:hover { border-color:rgba(6,182,212,0.4); }
+
+.cover-canvas-wrap canvas {
+  position:absolute; inset:0;
+  width:100%; height:100%; display:block;
+  object-fit:cover;
+}
+
+.cover-placeholder {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:1.5rem 1rem;
+  pointer-events:none;
+}
+.cover-placeholder .icon { font-size:2.5rem; margin-bottom:0.5rem; opacity:0.4; }
+.cover-placeholder p { font-size:0.72rem; color:var(--text3); }
+
+.cover-controls { display:flex; flex-direction:column; gap:0.8rem; }
+
+.cover-style-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;
+}
+
+.cover-style-btn {
+  padding:0.45rem 0.5rem;
+  border-radius:8px; border:1.5px solid rgba(255,255,255,0.08);
+  background:var(--bg2); color:var(--text2);
+  font-size:0.72rem; font-weight:600; cursor:pointer;
+  transition:all 0.2s; text-align:center;
+}
+.cover-style-btn:hover, .cover-style-btn.active {
+  border-color:var(--cyan); color:var(--cyan-l);
+  background:rgba(6,182,212,0.1);
+}
+
+.btn-gen-cover {
+  width:100%; padding:0.7rem 1rem;
+  background:linear-gradient(135deg, #0891b2, var(--cyan));
+  border:none; color:#fff; font-family:'Syne',sans-serif;
+  font-size:0.85rem; font-weight:700; letter-spacing:0.05em;
+  cursor:pointer; border-radius:10px;
+  transition:all 0.3s; position:relative; overflow:hidden;
+}
+.btn-gen-cover:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(6,182,212,0.35); }
+.btn-gen-cover:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+.btn-dl-cover {
+  width:100%; padding:0.6rem 1rem;
+  background:transparent; border:1px solid rgba(6,182,212,0.35);
+  color:var(--cyan-l); font-family:'DM Sans',sans-serif;
+  font-size:0.8rem; font-weight:600; cursor:pointer;
+  border-radius:10px; transition:all 0.2s;
+}
+.btn-dl-cover:hover { background:rgba(6,182,212,0.1); }
+.btn-dl-cover:disabled { opacity:0.3; cursor:not-allowed; }
+
+/* FORMAT SELECTOR */
+.format-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;
+}
+
+.format-card {
+  border:1.5px solid rgba(255,255,255,0.07);
+  border-radius:10px; padding:0.9rem 0.75rem;
+  background:var(--bg2); cursor:pointer;
+  transition:all 0.25s; text-align:center;
+  position:relative; overflow:hidden;
+}
+
+.format-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  border-radius:10px 10px 0 0;
+  opacity:0; transition:opacity 0.25s;
+}
+
+.fc-pdf::before { background:linear-gradient(90deg,var(--rose),var(--amber)); }
+.fc-word::before { background:linear-gradient(90deg,#2563eb,var(--cyan)); }
+.fc-epub::before { background:linear-gradient(90deg,var(--emerald),var(--cyan)); }
+.fc-txt::before { background:linear-gradient(90deg,var(--text3),var(--text2)); }
+
+.format-card:hover, .format-card.selected {
+  border-color:rgba(255,255,255,0.2);
+}
+.format-card.selected { background:rgba(124,58,237,0.1); border-color:var(--violet); }
+.format-card.selected::before { opacity:1; }
+
+.format-icon { font-size:1.6rem; margin-bottom:0.3rem; display:block; }
+.format-name { font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700; color:var(--text); margin-bottom:0.15rem; }
+.format-desc { font-size:0.65rem; color:var(--text3); }
+
+/* BOOK TYPE */
+.booktype-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:0.6rem; margin-bottom:0.8rem;
+}
+
+.booktype-card {
+  border:1.5px solid rgba(255,255,255,0.07);
+  border-radius:10px; padding:0.7rem 0.5rem;
+  background:var(--bg2); cursor:pointer;
+  transition:all 0.2s; text-align:center;
+}
+.booktype-card:hover { border-color:rgba(255,255,255,0.18); }
+.booktype-card.selected { border-color:var(--amber); background:rgba(245,158,11,0.1); }
+
+.booktype-emoji { font-size:1.4rem; display:block; margin-bottom:0.2rem; }
+.booktype-name { font-size:0.68rem; font-weight:600; color:var(--text2); }
+
+/* STATS BAR */
+.stats-bar {
+  display:flex; gap:0; margin-bottom:1.25rem;
+  background:var(--bg2);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:12px;
+  overflow:hidden;
+}
+.stat-item {
+  flex:1; text-align:center; padding:0.9rem 0.5rem;
+  border-right:1px solid rgba(255,255,255,0.06);
+}
+.stat-item:last-child { border-right:none; }
+.stat-val { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:var(--violet-l); line-height:1; }
+.stat-lbl { font-size:0.6rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text3); margin-top:0.25rem; }
+
+/* PROGRESS */
+.progress-container { margin-top:1.25rem; display:none; }
+.progress-container.active { display:block; }
+.progress-bar-wrap { height:4px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; margin-bottom:0.7rem; }
+.progress-bar { height:100%; background:linear-gradient(90deg,var(--violet),var(--cyan)); border-radius:2px; transition:width 0.4s ease; width:0%; box-shadow:0 0 10px rgba(124,58,237,0.5); }
+.progress-status { font-size:0.72rem; color:var(--text3); letter-spacing:0.06em; text-transform:uppercase; min-height:1.2em; }
+.progress-chapters { margin-top:0.6rem; max-height:180px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--violet) transparent; }
+.p-chapter { display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0; font-size:0.8rem; color:var(--text3); border-bottom:1px solid rgba(255,255,255,0.04); opacity:0.5; transition:opacity 0.3s; }
+.p-chapter.done { opacity:1; color:var(--emerald-l); }
+.p-chapter.active { opacity:1; color:var(--text); }
+.p-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.15); flex-shrink:0; }
+.p-chapter.done .p-dot { background:var(--emerald); }
+.p-chapter.active .p-dot { background:var(--violet-l); animation:pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.4)} }
+
+/* PRIMARY BUTTON */
+.btn-primary {
+  width:100%; padding:1rem 2rem;
+  background:linear-gradient(135deg, var(--violet) 0%, #6d28d9 50%, var(--violet) 100%);
+  background-size:200% 100%; background-position:100%;
+  border:none; color:#fff;
+  font-family:'Syne',sans-serif;
+  font-size:1rem; font-weight:700; letter-spacing:0.04em;
+  cursor:pointer; border-radius:12px;
+  transition:all 0.4s; position:relative; overflow:hidden;
+  margin-top:0.8rem;
+  box-shadow:0 4px 24px rgba(124,58,237,0.3);
+}
+.btn-primary:hover { background-position:0%; transform:translateY(-2px); box-shadow:0 8px 32px rgba(124,58,237,0.45); }
+.btn-primary:disabled { opacity:0.45; cursor:not-allowed; transform:none; box-shadow:none; }
+
+/* EXPORT BUTTONS */
+.export-row { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; margin-top:1rem; }
+
+.btn-export {
+  padding:0.8rem 1rem;
+  border-radius:10px; border:none;
+  font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700;
+  cursor:pointer; transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:0.4rem;
+}
+
+.btn-pdf { background:linear-gradient(135deg, #dc2626, #ea580c); color:#fff; box-shadow:0 4px 16px rgba(220,38,38,0.3); }
+.btn-pdf:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(220,38,38,0.4); }
+
+.btn-word { background:linear-gradient(135deg, #2563eb, #0891b2); color:#fff; box-shadow:0 4px 16px rgba(37,99,235,0.3); }
+.btn-word:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(37,99,235,0.4); }
+
+.btn-epub { background:linear-gradient(135deg, var(--emerald), #0891b2); color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.3); }
+.btn-epub:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(16,185,129,0.4); }
+
+.btn-txt { background:var(--surface2); border:1px solid rgba(255,255,255,0.12); color:var(--text2); }
+.btn-txt:hover { background:rgba(255,255,255,0.07); color:var(--text); }
+
+.btn-regen { background:transparent; border:1.5px solid rgba(255,255,255,0.12); color:var(--text2); }
+.btn-regen:hover { background:rgba(255,255,255,0.06); color:var(--text); }
+
+/* PREVIEW */
+.preview-panel { display:none; }
+.preview-panel.visible { display:block; }
+
+.preview-book {
+  background:var(--bg2);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:12px;
+  padding:2rem;
+  max-height:480px;
+  overflow-y:auto;
+  scrollbar-width:thin; scrollbar-color:var(--violet) transparent;
+  font-family:'DM Serif Display', serif;
+  font-size:1rem; line-height:1.9;
+  color:rgba(241,240,255,0.85);
+}
+.preview-book h2 { font-size:1.5rem; font-style:italic; color:var(--violet-l); margin:2rem 0 0.6rem; padding-bottom:0.4rem; border-bottom:1px solid rgba(124,58,237,0.2); }
+.preview-book h2:first-child { margin-top:0; }
+.preview-book p { margin-bottom:0.9em; text-indent:2em; }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:2rem; right:2rem;
+  background:var(--surface2);
+  border:1px solid rgba(124,58,237,0.4);
+  box-shadow:0 10px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.1);
+  padding:0.9rem 1.4rem;
+  border-radius:12px;
+  font-size:0.9rem; color:var(--text);
+  z-index:3000;
+  transform:translateY(80px) scale(0.96); opacity:0;
+  transition:all 0.35s cubic-bezier(.22,.68,0,1.2);
+  max-width:300px;
+}
+.toast.show { transform:translateY(0) scale(1); opacity:1; }
+
+/* DIVIDER */
+.divider {
+  height:1px; background:var(--border);
+  margin:1.2rem 0;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(124,58,237,0.3); border-radius:3px; }
+
+/* ===== VOICE MODAL ===== */
+.voice-modal-backdrop {
+  position:fixed; inset:0; z-index:2000;
+  background:rgba(5,5,10,0.85);
+  backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 0.3s;
+}
+.voice-modal-backdrop.open { opacity:1; pointer-events:all; }
+.voice-modal {
+  background:linear-gradient(160deg,#13131f 0%,#0a0a12 100%);
+  border:1px solid rgba(124,58,237,0.35);
+  border-radius:20px;
+  padding:2.5rem 2rem 2rem;
+  width:min(440px,92vw);
+  text-align:center; position:relative;
+  transform:translateY(24px) scale(0.97);
+  transition:transform 0.3s cubic-bezier(.22,.68,0,1.2);
+  box-shadow:0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(124,58,237,0.1), 0 0 40px rgba(124,58,237,0.08);
+}
+.voice-modal-backdrop.open .voice-modal { transform:translateY(0) scale(1); }
+.voice-modal::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--violet),var(--cyan),transparent); border-radius:20px 20px 0 0; }
+.voice-modal-close { position:absolute; top:1rem; right:1rem; background:none; border:none; color:var(--text3); font-size:1.1rem; cursor:pointer; transition:color 0.2s; }
+.voice-modal-close:hover { color:var(--text); }
+.voice-modal-label { font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--violet-l); opacity:0.6; margin-bottom:0.35rem; font-weight:600; }
+.voice-modal-field { font-family:'DM Serif Display',serif; font-size:1.1rem; font-style:italic; color:var(--text); margin-bottom:1.8rem; }
+.voice-orb-wrap { display:flex; flex-direction:column; align-items:center; gap:1rem; margin-bottom:1.5rem; }
+.voice-orb {
+  width:88px; height:88px; border-radius:50%;
+  background:rgba(124,58,237,0.1); border:2px solid rgba(124,58,237,0.3);
+  display:flex; align-items:center; justify-content:center; font-size:2rem;
+  cursor:pointer; transition:all 0.3s;
+}
+.voice-orb:hover { background:rgba(124,58,237,0.2); border-color:var(--violet); box-shadow:0 0 30px rgba(124,58,237,0.25); }
+.voice-orb.listening { border-color:var(--violet); animation:orb-pulse 1.6s ease-in-out infinite; }
+@keyframes orb-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,0.4)}50%{box-shadow:0 0 0 18px rgba(124,58,237,0)} }
+.voice-orb-status { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text3); opacity:0.7; transition:color 0.2s; }
+.voice-orb-status.active { color:var(--violet-l); opacity:1; }
+.voice-wave { display:flex; align-items:center; justify-content:center; gap:3px; height:32px; margin:0 auto 0.75rem; }
+.voice-wave .bar { width:3px; border-radius:2px; background:var(--violet-l); opacity:0.2; height:6px; }
+.voice-wave.active .bar { opacity:0.7; animation:wave-bar 0.8s ease-in-out infinite; }
+.voice-wave .bar:nth-child(1){animation-delay:0s}.voice-wave .bar:nth-child(2){animation-delay:0.1s}.voice-wave .bar:nth-child(3){animation-delay:0.2s}.voice-wave .bar:nth-child(4){animation-delay:0.3s}.voice-wave .bar:nth-child(5){animation-delay:0.15s}.voice-wave .bar:nth-child(6){animation-delay:0.05s}.voice-wave .bar:nth-child(7){animation-delay:0.25s}
+@keyframes wave-bar { 0%,100%{height:5px}50%{height:22px} }
+.voice-transcript { background:rgba(255,255,255,0.03); border:1px solid rgba(124,58,237,0.2); border-radius:10px; padding:0.9rem 1rem; min-height:68px; font-size:0.95rem; line-height:1.65; color:var(--text); text-align:left; margin-bottom:1rem; overflow-y:auto; max-height:120px; }
+.voice-transcript .interim { color:rgba(167,139,250,0.55); font-style:italic; }
+.voice-transcript-placeholder { color:rgba(255,255,255,0.15); font-style:italic; font-size:0.88rem; }
+.voice-insert-btn { width:100%; padding:0.75rem 1.5rem; background:linear-gradient(135deg,var(--violet),#6d28d9); border:none; color:#fff; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; cursor:pointer; border-radius:10px; transition:all 0.3s; }
+.voice-insert-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(124,58,237,0.35); }
+.voice-insert-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; box-shadow:none; }
+.voice-error { font-size:0.7rem; color:var(--rose-l); margin-top:0.6rem; min-height:1em; }
+
+/* SPINNER */
+.spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* COVER LOADING */
+.cover-loading {
+  position:absolute; inset:0;
+  background:rgba(10,10,18,0.85);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:0.75rem; border-radius:12px; z-index:5;
+}
+.cover-loading-text { font-size:0.72rem; color:var(--cyan-l); letter-spacing:0.1em; text-transform:uppercase; font-weight:600; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">📖</div>
+    <div>
+      <div class="logo-text">ÉcriVerse Pro</div>
+      <div class="logo-sub">Studio Littéraire IA</div>
+    </div>
+  </div>
+  <div class="header-badge">✦ Propulsé par Claude AI</div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Créez votre livre,<br>du concept à la pochette</h1>
+  <p>Romans, albums jeunesse, BD, essais, formations — générés par l'IA avec pochette réaliste et export multi-format.</p>
+</div>
+
+<!-- AUDIENCE -->
+<div class="audience-tabs">
+  <span style="font-size:0.72rem;font-weight:600;color:var(--text3);align-self:center;margin-right:0.3rem;">Pour :</span>
+  <button class="aud-tab" data-aud="enfant" onclick="setAudience('enfant',this)">🧒 Enfants (3–10 ans)</button>
+  <button class="aud-tab" data-aud="ado" onclick="setAudience('ado',this)">🎒 Ados (11–17 ans)</button>
+  <button class="aud-tab active-adulte" data-aud="adulte" onclick="setAudience('adulte',this)">📚 Adultes</button>
+  <button class="aud-tab" data-aud="senior" onclick="setAudience('senior',this)">🌿 Seniors</button>
+  <button class="aud-tab" data-aud="pro" onclick="setAudience('pro',this)">💼 Pro / Formation</button>
+</div>
+
+<div class="app-container">
+
+  <!-- PANEL 1 : TYPE DE LIVRE -->
+  <div class="panel">
+    <div class="panel-glow glow-amber"></div>
+    <div class="panel-title">
+      <span class="icon icon-amber">📚</span>
+      <span style="color:var(--amber-l)">Type de Document</span>
+    </div>
+
+    <div class="booktype-grid" id="booktypeGrid">
+      <div class="booktype-card selected" data-type="roman" onclick="selectBooktype(this,'roman')">
+        <span class="booktype-emoji">📖</span>
+        <div class="booktype-name">Roman</div>
+      </div>
+      <div class="booktype-card" data-type="album" onclick="selectBooktype(this,'album')">
+        <span class="booktype-emoji">🎨</span>
+        <div class="booktype-name">Album jeunesse</div>
+      </div>
+      <div class="booktype-card" data-type="bd" onclick="selectBooktype(this,'bd')">
+        <span class="booktype-emoji">💬</span>
+        <div class="booktype-name">BD / Manga</div>
+      </div>
+      <div class="booktype-card" data-type="essai" onclick="selectBooktype(this,'essai')">
+        <span class="booktype-emoji">🧠</span>
+        <div class="booktype-name">Essai</div>
+      </div>
+      <div class="booktype-card" data-type="formation" onclick="selectBooktype(this,'formation')">
+        <span class="booktype-emoji">🎓</span>
+        <div class="booktype-name">Formation</div>
+      </div>
+      <div class="booktype-card" data-type="memoire" onclick="selectBooktype(this,'memoire')">
+        <span class="booktype-emoji">💌</span>
+        <div class="booktype-name">Mémoires</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Genre / Sous-catégorie</label>
+      <select id="genre">
+        <option value="roman fantastique">Fantastique</option>
+        <option value="roman policier">Policier / Thriller</option>
+        <option value="roman d'amour">Romance</option>
+        <option value="science-fiction">Science-Fiction</option>
+        <option value="roman historique">Roman Historique</option>
+        <option value="roman d'aventure">Aventure</option>
+        <option value="roman psychologique">Psychologique</option>
+        <option value="horreur">Horreur</option>
+        <option value="drame littéraire">Drame Littéraire</option>
+        <option value="conte philosophique">Conte Philosophique</option>
+        <option value="guide pratique">Guide Pratique</option>
+        <option value="développement personnel">Développement Personnel</option>
+        <option value="biographie">Biographie</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Style d'écriture</label>
+      <select id="style">
+        <option value="classique et élégant">Classique & Élégant</option>
+        <option value="sombre et poétique">Sombre & Poétique</option>
+        <option value="vif et haletant">Vif & Haletant</option>
+        <option value="lyrique et contemplatif">Lyrique & Contemplatif</option>
+        <option value="simple et accessible">Simple & Accessible</option>
+        <option value="humoristique et décalé">Humoristique & Décalé</option>
+        <option value="épique et grandiose">Épique & Grandiose</option>
+        <option value="pédagogique et clair">Pédagogique & Clair</option>
+      </select>
+    </div>
+
+    <!-- SLIDER -->
+    <div class="slider-group">
+      <div class="slider-header">
+        <label>Pages cibles</label>
+        <span class="slider-val" id="pageVal">80</span>
+      </div>
+      <input type="range" id="pageCount" min="1" max="500" value="80" step="1" oninput="updateSlider(this)">
+      <div class="page-labels"><span>1</span><span>100</span><span>200</span><span>300</span><span>400</span><span>500</span></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="panel-title" style="margin-bottom:0.9rem">
+      <span class="icon icon-violet">🎭</span>
+      <span style="color:var(--violet-l)">Personnages</span>
+    </div>
+    <div class="char-grid" id="charGrid">
+      <div class="char-card">
+        <button class="char-del" onclick="delChar(this)">✕</button>
+        <input type="text" placeholder="Nom du personnage" class="char-name">
+        <input type="text" placeholder="Rôle (héros, antagoniste…)" class="char-role">
+      </div>
+      <div class="char-card">
+        <button class="char-del" onclick="delChar(this)">✕</button>
+        <input type="text" placeholder="Nom du personnage" class="char-name">
+        <input type="text" placeholder="Rôle (héros, antagoniste…)" class="char-role">
+      </div>
+    </div>
+    <button class="btn-add" onclick="addChar()" style="margin-top:0.6rem">+ Ajouter un personnage</button>
+  </div>
+
+  <!-- PANEL 2 : CONCEPT -->
+  <div class="panel">
+    <div class="panel-glow glow-violet"></div>
+    <div class="panel-title">
+      <span class="icon icon-violet">✍️</span>
+      <span style="color:var(--violet-l)">Concept du Livre</span>
+    </div>
+
+    <div class="form-group">
+      <label>Titre</label>
+      <div class="input-voice-wrap">
+        <input type="text" id="title" placeholder="Les Ombres de l'Azur…" />
+        <button class="voice-btn" onclick="openVoiceModal('title','Titre')">🎙</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Auteur</label>
+      <div class="input-voice-wrap">
+        <input type="text" id="author" placeholder="Votre nom…" />
+        <button class="voice-btn" onclick="openVoiceModal('author','Auteur')">🎙</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Sous-titre / Accroche (optionnel)</label>
+      <div class="input-voice-wrap">
+        <input type="text" id="subtitle" placeholder="Une histoire de lumière et d'ombres…" />
+        <button class="voice-btn" onclick="openVoiceModal('subtitle','Sous-titre')">🎙</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Époque & Cadre</label>
+      <div class="input-voice-wrap">
+        <input type="text" id="setting" placeholder="Paris, 1920 / Monde post-apocalyptique…" />
+        <button class="voice-btn" onclick="openVoiceModal('setting','Époque & Cadre')">🎙</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Synopsis — Intrigue principale</label>
+      <div class="input-voice-wrap">
+        <textarea id="synopsis" placeholder="Le conflit central, les enjeux, l'arc narratif, les rebondissements…"></textarea>
+        <button class="voice-btn textarea-btn" onclick="openVoiceModal('synopsis','Synopsis')">🎙</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Thèmes & Atmosphère</label>
+      <div class="input-voice-wrap">
+        <input type="text" id="themes" placeholder="trahison, rédemption, amour, mystère…" />
+        <button class="voice-btn" onclick="openVoiceModal('themes','Thèmes')">🎙</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CHAPTERS -->
+    <div class="panel-title" style="margin-bottom:0.9rem">
+      <span class="icon icon-cyan">📋</span>
+      <span style="color:var(--cyan-l)">Structure des Chapitres</span>
+    </div>
+    <div id="chaptersList" class="chapters-list"></div>
+    <button class="btn-add" onclick="addChapter()">+ Ajouter un chapitre</button>
+  </div>
+
+  <!-- PANEL 3 : POCHETTE IA -->
+  <div class="panel">
+    <div class="panel-glow glow-cyan"></div>
+    <div class="panel-title">
+      <span class="icon icon-cyan">🎨</span>
+      <span style="color:var(--cyan-l)">Pochette & Page de Garde IA</span>
+    </div>
+
+    <div class="cover-preview-wrap">
+      <div class="cover-canvas-wrap" id="coverWrap" onclick="coverWrapClick()">
+        <canvas id="coverCanvas" width="400" height="600"></canvas>
+        <div class="cover-placeholder" id="coverPlaceholder">
+          <div class="icon">🖼️</div>
+          <p>Cliquez sur<br>«&nbsp;Générer la pochette&nbsp;»</p>
+        </div>
+        <div class="cover-loading" id="coverLoading" style="display:none">
+          <div class="spinner"></div>
+          <div class="cover-loading-text">Création en cours…</div>
+        </div>
+      </div>
+
+      <div class="cover-controls">
+        <div class="form-group">
+          <label>Style visuel</label>
+          <div class="cover-style-grid">
+            <button class="cover-style-btn active" data-style="cinematic" onclick="selectCoverStyle(this)">🎬 Cinématique</button>
+            <button class="cover-style-btn" data-style="painterly" onclick="selectCoverStyle(this)">🎨 Peinture</button>
+            <button class="cover-style-btn" data-style="minimalist" onclick="selectCoverStyle(this)">◻ Minimaliste</button>
+            <button class="cover-style-btn" data-style="fantasy" onclick="selectCoverStyle(this)">✨ Fantasy</button>
+            <button class="cover-style-btn" data-style="photorealist" onclick="selectCoverStyle(this)">📷 Photoréaliste</button>
+            <button class="cover-style-btn" data-style="vintage" onclick="selectCoverStyle(this)">📜 Vintage</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description visuelle (optionnel)</label>
+          <textarea id="coverDesc" placeholder="Une silhouette sombre dans une ruelle parisienne sous la pluie…" style="min-height:65px;font-size:0.82rem;"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Palette de couleurs</label>
+          <select id="coverPalette">
+            <option value="auto">Automatique (selon le genre)</option>
+            <option value="dark">Sombres & Mystérieuses</option>
+            <option value="warm">Chaudes & Dorées</option>
+            <option value="cool">Froides & Bleues</option>
+            <option value="vibrant">Vives & Éclatantes</option>
+            <option value="pastel">Pastels & Douces</option>
+            <option value="bw">Noir & Blanc</option>
+          </select>
+        </div>
+
+        <button class="btn-gen-cover" id="genCoverBtn" onclick="generateCover()">
+          🎨 Générer la Pochette
+        </button>
+        <button class="btn-dl-cover" id="dlCoverBtn" onclick="downloadCover()" disabled>
+          ⬇ Télécharger la pochette
+        </button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- GENERATION OPTIONS -->
+    <div class="panel-title" style="margin-bottom:0.9rem">
+      <span class="icon icon-violet">⚙️</span>
+      <span style="color:var(--violet-l)">Options de Génération</span>
+    </div>
+
+    <div class="input-row" style="margin-bottom:0.8rem">
+      <div class="form-group" style="margin-bottom:0">
+        <label>Point de vue</label>
+        <select id="pov">
+          <option value="à la première personne (je)">1ère personne</option>
+          <option value="à la troisième personne omniscient">3ème omniscient</option>
+          <option value="à la troisième personne limité">3ème limité</option>
+          <option value="en alternant les points de vue">Points alternés</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Densité narrative</label>
+        <select id="density">
+          <option value="équilibrée entre dialogue et description">Équilibrée</option>
+          <option value="riche en dialogues">Riche en dialogues</option>
+          <option value="riche en descriptions">Riche en descriptions</option>
+          <option value="rythmée avec beaucoup d'action">Riche en action</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Note de l'auteur</label>
+      <div class="input-voice-wrap">
+        <textarea id="authorNote" placeholder="Règles du monde, éléments à intégrer absolument, ton particulier…" style="min-height:60px"></textarea>
+        <button class="voice-btn textarea-btn" onclick="openVoiceModal('authorNote','Note de l\'auteur')">🎙</button>
+      </div>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-item"><div class="stat-val" id="statChap">0</div><div class="stat-lbl">Chapitres</div></div>
+      <div class="stat-item"><div class="stat-val" id="statPages">80</div><div class="stat-lbl">Pages</div></div>
+      <div class="stat-item"><div class="stat-val" id="statWords">32k</div><div class="stat-lbl">Mots</div></div>
+      <div class="stat-item"><div class="stat-val" id="statTime">~12</div><div class="stat-lbl">Min lecture</div></div>
+    </div>
+
+    <button class="btn-primary" id="genBtn" onclick="startGeneration()">
+      ✦ Générer le Livre Complet
+    </button>
+
+    <div class="progress-container" id="progressWrap">
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-status" id="progressStatus">Initialisation…</div>
+      <div class="progress-chapters" id="progressChapters"></div>
+    </div>
+  </div>
+
+  <!-- PANEL 4 : FORMAT & EXPORT (full width) -->
+  <div class="panel panel-wide preview-panel" id="previewPanel">
+    <div class="panel-glow glow-rose"></div>
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start">
+      <div>
+        <div class="panel-title">
+          <span class="icon icon-rose">👁</span>
+          <span style="color:var(--rose-l)">Aperçu du Livre</span>
+        </div>
+        <div class="preview-book" id="previewBook"></div>
+      </div>
+
+      <div>
+        <div class="panel-title" style="margin-bottom:1rem">
+          <span class="icon icon-emerald">📦</span>
+          <span style="color:var(--emerald-l)">Exporter</span>
+        </div>
+
+        <div class="format-grid" style="margin-bottom:1.2rem">
+          <div class="format-card fc-pdf selected" onclick="selectFormat(this,'pdf')">
+            <span class="format-icon">📕</span>
+            <div class="format-name">PDF Livre</div>
+            <div class="format-desc">Page de garde, TdM, chapitres</div>
+          </div>
+          <div class="format-card fc-word" onclick="selectFormat(this,'docx')">
+            <span class="format-icon">📘</span>
+            <div class="format-name">Word / DOCX</div>
+            <div class="format-desc">Éditable, styles Word</div>
+          </div>
+          <div class="format-card fc-epub" onclick="selectFormat(this,'epub')">
+            <span class="format-icon">📗</span>
+            <div class="format-name">ePub / Kindle</div>
+            <div class="format-desc">Liseuse numérique</div>
+          </div>
+          <div class="format-card fc-txt" onclick="selectFormat(this,'txt')">
+            <span class="format-icon">📄</span>
+            <div class="format-name">Texte brut</div>
+            <div class="format-desc">TXT universel</div>
+          </div>
+        </div>
+
+        <div class="export-row">
+          <button class="btn-export btn-pdf" onclick="doExport('pdf')">📕 PDF</button>
+          <button class="btn-export btn-word" onclick="doExport('docx')">📘 Word</button>
+          <button class="btn-export btn-epub" onclick="doExport('epub')">📗 ePub</button>
+          <button class="btn-export btn-txt" onclick="doExport('txt')">📄 TXT</button>
+        </div>
+
+        <div style="margin-top:1rem">
+          <button class="btn-export btn-regen" style="width:100%" onclick="startGeneration()">↺ Régénérer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .app-container -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- VOICE MODAL -->
+<div class="voice-modal-backdrop" id="voiceBackdrop" onclick="handleBackdropClick(event)">
+  <div class="voice-modal">
+    <button class="voice-modal-close" onclick="closeVoiceModal()">✕</button>
+    <div class="voice-modal-label">Dictée vocale</div>
+    <div class="voice-modal-field" id="voiceFieldLabel">Titre</div>
+    <div class="voice-orb-wrap">
+      <div class="voice-orb" id="voiceOrb" onclick="toggleListening()">🎙</div>
+      <div class="voice-orb-status" id="voiceOrbStatus">Cliquez pour commencer</div>
+    </div>
+    <div class="voice-wave" id="voiceWave">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <div class="voice-transcript" id="voiceTranscript">
+      <span class="voice-transcript-placeholder">Votre dictée apparaîtra ici…</span>
+    </div>
+    <button class="voice-insert-btn" id="voiceInsertBtn" onclick="insertTranscript()" disabled>✦ Insérer le texte</button>
+    <div class="voice-error" id="voiceError"></div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let chapters = [];
+let generatedContent = {};
+let novelData = {};
+let currentBooktype = 'roman';
+let currentAudience = 'adulte';
+let selectedFormat = 'pdf';
+let selectedCoverStyle = 'cinematic';
+let coverGenerated = false;
+
+// ===== INIT =====
+(function init() {
+  const defaults = ["L'Appel du Destin","Les Ombres du Passé","Le Tournant","Révélations","L'Affrontement Final"];
+  defaults.forEach(t => addChapter(t));
+  updateStats();
+  drawCoverPlaceholder();
+})();
+
+// ===== AUDIENCE =====
+function setAudience(aud, btn) {
+  currentAudience = aud;
+  document.querySelectorAll('.aud-tab').forEach(t => {
+    t.className = 'aud-tab';
+  });
+  btn.classList.add('active-'+aud);
+
+  // Adapt style options
+  const styleEl = document.getElementById('style');
+  if(aud==='enfant') {
+    styleEl.value = 'simple et accessible';
+    const densityEl = document.getElementById('density');
+    if(densityEl) densityEl.value = 'riche en dialogues';
+  } else if(aud==='ado') {
+    styleEl.value = 'vif et haletant';
+  } else if(aud==='pro') {
+    styleEl.value = 'pédagogique et clair';
+  }
+}
+
+// ===== BOOK TYPE =====
+function selectBooktype(el, type) {
+  currentBooktype = type;
+  document.querySelectorAll('.booktype-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+
+  // Adapt genre
+  const genreEl = document.getElementById('genre');
+  if(type==='formation') genreEl.value = 'guide pratique';
+  else if(type==='essai') genreEl.value = 'développement personnel';
+  else if(type==='memoire') genreEl.value = 'biographie';
+}
+
+// ===== FORMAT =====
+function selectFormat(el, fmt) {
+  selectedFormat = fmt;
+  document.querySelectorAll('.format-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ===== COVER STYLE =====
+function selectCoverStyle(el) {
+  selectedCoverStyle = el.dataset.style;
+  document.querySelectorAll('.cover-style-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function coverWrapClick() {}
+
+// ===== COVER GENERATION =====
+function drawCoverPlaceholder() {
+  const canvas = document.getElementById('coverCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,400,600);
+}
+
+async function generateCover() {
+  const title = document.getElementById('title').value.trim() || 'Mon Livre';
+  const author = document.getElementById('author').value.trim() || 'Auteur';
+  const genre = document.getElementById('genre').value;
+  const subtitle = document.getElementById('subtitle').value.trim();
+  const coverDescUser = document.getElementById('coverDesc').value.trim();
+  const palette = document.getElementById('coverPalette').value;
+
+  const btn = document.getElementById('genCoverBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Génération…';
+  document.getElementById('coverLoading').style.display = 'flex';
+  document.getElementById('coverPlaceholder').style.display = 'none';
+
+  const styleDescriptions = {
+    cinematic: 'dramatic cinematic lighting, movie poster quality, deep shadows, volumetric light rays',
+    painterly: 'oil painting style, impressionist brushstrokes, artistic, gallery quality',
+    minimalist: 'clean minimalist design, geometric shapes, bold typography spaces, sophisticated',
+    fantasy: 'magical fantasy illustration, ethereal glow, mystical atmosphere, epic scale',
+    photorealist: 'ultra photorealistic, 8k resolution, hyperdetailed, professional photography',
+    vintage: 'vintage retro aesthetic, aged paper texture, art deco elements, sepia tones'
+  };
+
+  const paletteDesc = {
+    auto: '', dark:'dark moody palette, midnight blues and deep purples', warm:'warm golden palette, amber and burnt orange',
+    cool:'cool blue palette, icy silver and arctic tones', vibrant:'vibrant vivid palette, saturated electric colors',
+    pastel:'soft pastel palette, light watercolor tones', bw:'black and white only, dramatic contrast'
+  };
+
+  const prompt = `Create a stunning, professional book cover image for a ${genre} titled "${title}" by ${author}.
+${subtitle ? `Subtitle: "${subtitle}".` : ''}
+${coverDescUser ? `Visual concept: ${coverDescUser}.` : ''}
+Style: ${styleDescriptions[selectedCoverStyle]}.
+${paletteDesc[palette] ? 'Color palette: '+paletteDesc[palette]+'.' : ''}
+The cover must look like a high-quality published book cover. No text, only the visual scene/illustration.
+Respond ONLY with a JSON object: {"description":"detailed visual description","colors":["#hex1","#hex2","#hex3","#hex4","#hex5"],"mood":"mood of the image","elements":["element1","element2","element3"]}`;
+
+  try {
+    const resp = await fetch(API_ENDPOINT, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:600, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await resp.json();
+    const txt = data.content?.map(b=>b.text||'').join('') || '{}';
+    let coverData;
+    try { coverData = JSON.parse(txt.replace(/```json|```/g,'').trim()); }
+    catch(e) { coverData = {colors:['#0a0a12','#1a1a2e','#7c3aed','#06b6d4','#f1f0ff'], mood:'mysterious', elements:['silhouette','light','atmosphere'], description:'A dramatic scene'}; }
+
+    renderCoverCanvas(title, author, subtitle, coverData);
+    coverGenerated = true;
+    document.getElementById('dlCoverBtn').disabled = false;
+    showToast('🎨 Pochette générée avec succès !', 3000);
+  } catch(e) {
+    showToast('Erreur pochette : '+e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🎨 Générer la Pochette';
+    document.getElementById('coverLoading').style.display = 'none';
+  }
+}
+
+function renderCoverCanvas(title, author, subtitle, data) {
+  const canvas = document.getElementById('coverCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 400, H = 600;
+  ctx.clearRect(0,0,W,H);
+
+  const colors = data.colors || ['#0a0a12','#1a1a2e','#7c3aed','#06b6d4','#f1f0ff'];
+  const c0 = colors[0]||'#0a0a12', c1 = colors[1]||'#1a1a2e', c2 = colors[2]||'#7c3aed', c3 = colors[3]||'#06b6d4';
+
+  // Background gradient
+  const bg = ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0, c0); bg.addColorStop(0.5, c1); bg.addColorStop(1, c2+'88');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+
+  // Atmospheric layers
+  const atm1 = ctx.createRadialGradient(W*0.3, H*0.3, 0, W*0.3, H*0.3, W*0.6);
+  atm1.addColorStop(0, c3+'55'); atm1.addColorStop(1,'transparent');
+  ctx.fillStyle = atm1; ctx.fillRect(0,0,W,H);
+
+  const atm2 = ctx.createRadialGradient(W*0.8, H*0.7, 0, W*0.8, H*0.7, W*0.5);
+  atm2.addColorStop(0, c2+'44'); atm2.addColorStop(1,'transparent');
+  ctx.fillStyle = atm2; ctx.fillRect(0,0,W,H);
+
+  // Abstract shapes based on elements
+  ctx.save();
+  const el = data.elements || [];
+  // Draw some abstract visual shapes
+  for(let i=0;i<6;i++) {
+    const x = Math.random()*W, y = Math.random()*H;
+    const r = 20+Math.random()*80;
+    const g = ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0, (i%2===0?c2:c3)+'33'); g.addColorStop(1,'transparent');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  }
+
+  // Silhouette shapes
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath();
+  ctx.moveTo(0,H*0.5); ctx.quadraticCurveTo(W*0.3,H*0.4,W*0.5,H*0.45);
+  ctx.quadraticCurveTo(W*0.7,H*0.5,W,H*0.42); ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.moveTo(0,H*0.65); ctx.quadraticCurveTo(W*0.4,H*0.6,W*0.6,H*0.65);
+  ctx.quadraticCurveTo(W*0.85,H*0.7,W,H*0.62); ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+  ctx.fill();
+
+  // Light ray effect
+  ctx.save();
+  ctx.globalAlpha = 0.12;
+  for(let i=0;i<8;i++) {
+    const angle = (i/8)*Math.PI*2;
+    const gRay = ctx.createLinearGradient(W/2,H/3, W/2+Math.cos(angle)*W, H/3+Math.sin(angle)*H);
+    gRay.addColorStop(0, c3); gRay.addColorStop(1,'transparent');
+    ctx.fillStyle = gRay; ctx.beginPath();
+    ctx.moveTo(W/2,H/3);
+    ctx.lineTo(W/2+Math.cos(angle-0.1)*W*1.5, H/3+Math.sin(angle-0.1)*H*1.5);
+    ctx.lineTo(W/2+Math.cos(angle+0.1)*W*1.5, H/3+Math.sin(angle+0.1)*H*1.5);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+
+  // Top gradient overlay for text area
+  const topGrad = ctx.createLinearGradient(0,0,0,H*0.35);
+  topGrad.addColorStop(0,'rgba(0,0,0,0.75)'); topGrad.addColorStop(1,'transparent');
+  ctx.fillStyle = topGrad; ctx.fillRect(0,0,W,H*0.35);
+
+  // Bottom gradient for author
+  const botGrad = ctx.createLinearGradient(0,H*0.72,0,H);
+  botGrad.addColorStop(0,'transparent'); botGrad.addColorStop(1,'rgba(0,0,0,0.8)');
+  ctx.fillStyle = botGrad; ctx.fillRect(0,H*0.72,W,H*0.28);
+
+  // Decorative top bar
+  ctx.fillStyle = colors[2]||'#7c3aed';
+  ctx.fillRect(0,0,W,3);
+
+  // TITLE
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  const titleSize = title.length > 20 ? 32 : title.length > 12 ? 38 : 44;
+  ctx.font = `bold italic ${titleSize}px "Georgia", serif`;
+  ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 15;
+  const titleLines = wrapText(ctx, title, W-60);
+  let ty = 55 + titleLines.length*0;
+  titleLines.forEach((line,i) => { ctx.fillText(line, W/2, ty + i*(titleSize+6)); });
+
+  // SUBTITLE
+  if(subtitle) {
+    ctx.font = `italic ${Math.min(16,Math.floor(titleSize*0.4))}px "Georgia", serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.shadowBlur = 8;
+    ctx.fillText(subtitle, W/2, ty + titleLines.length*(titleSize+6) + 12);
+  }
+
+  // DECORATIVE RULE
+  const ruleY = H*0.13;
+  const ruleGrad = ctx.createLinearGradient(W*0.1, ruleY, W*0.9, ruleY);
+  ruleGrad.addColorStop(0,'transparent'); ruleGrad.addColorStop(0.5, colors[3]||'#06b6d4'); ruleGrad.addColorStop(1,'transparent');
+  ctx.strokeStyle = ruleGrad; ctx.lineWidth = 1; ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.moveTo(W*0.1, ruleY); ctx.lineTo(W*0.9, ruleY); ctx.stroke();
+
+  // AUTHOR
+  ctx.font = '500 18px "Arial", sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 10;
+  ctx.fillText(author, W/2, H-28);
+
+  // Bottom rule
+  ctx.strokeStyle = ruleGrad; ctx.lineWidth = 1; ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.moveTo(W*0.1,H-50); ctx.lineTo(W*0.9,H-50); ctx.stroke();
+
+  ctx.restore();
+  document.getElementById('coverPlaceholder').style.display = 'none';
+}
+
+function wrapText(ctx, text, maxW) {
+  const words = text.split(' '); const lines = []; let cur = '';
+  words.forEach(w => {
+    const t = cur ? cur+' '+w : w;
+    if(ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; }
+    else cur = t;
+  });
+  if(cur) lines.push(cur);
+  return lines;
+}
+
+function downloadCover() {
+  const canvas = document.getElementById('coverCanvas');
+  const a = document.createElement('a');
+  const title = (document.getElementById('title').value.trim()||'cover').replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  a.download = 'pochette_'+title+'.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+  showToast('🎨 Pochette téléchargée !', 2500);
+}
+
+// ===== CHAPTERS =====
+function addChapter(title='') {
+  const id = Date.now()+Math.random();
+  chapters.push({id,title});
+  renderChapters(); updateStats();
+}
+function renderChapters() {
+  const el = document.getElementById('chaptersList');
+  el.innerHTML='';
+  chapters.forEach((ch,i) => {
+    const div = document.createElement('div');
+    div.className='chapter-item';
+    div.innerHTML=`<span class="chapter-num">${String(i+1).padStart(2,'0')}</span>
+      <input type="text" value="${escHtml(ch.title)}" placeholder="Titre du chapitre…" oninput="chapters[${i}].title=this.value;updateStats()"/>
+      <button class="chapter-del" onclick="delChapter(${i})">✕</button>`;
+    el.appendChild(div);
+  });
+}
+function delChapter(i) { chapters.splice(i,1); renderChapters(); updateStats(); }
+
+// ===== CHARACTERS =====
+function addChar() {
+  const grid = document.getElementById('charGrid');
+  const div = document.createElement('div');
+  div.className='char-card';
+  div.innerHTML=`<button class="char-del" onclick="delChar(this)">✕</button>
+    <input type="text" placeholder="Nom du personnage" class="char-name">
+    <input type="text" placeholder="Rôle (héros, antagoniste…)" class="char-role">`;
+  grid.appendChild(div);
+}
+function delChar(btn) { btn.parentElement.remove(); }
+
+// ===== SLIDER =====
+function updateSlider(el) {
+  const v = parseInt(el.value);
+  const pct = ((v-1)/499*100).toFixed(1);
+  el.style.setProperty('--p',pct+'%');
+  document.getElementById('pageVal').textContent = v;
+  updateStats();
+}
+
+// ===== STATS =====
+function updateStats() {
+  const pages = parseInt(document.getElementById('pageCount').value)||80;
+  const words = Math.round(pages*400);
+  const mins = Math.round(words/250);
+  document.getElementById('statChap').textContent = chapters.length;
+  document.getElementById('statPages').textContent = pages;
+  document.getElementById('statWords').textContent = words>=1000?Math.round(words/1000)+'k':words;
+  document.getElementById('statTime').textContent = '~'+mins;
+}
+
+// ===== HELPERS =====
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg,duration=3500) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),duration);
+}
+function getCharacters() {
+  return Array.from(document.querySelectorAll('.char-card')).map(c=>{
+    const n=c.querySelector('.char-name')?.value?.trim();
+    const r=c.querySelector('.char-role')?.value?.trim();
+    return n?`${n}${r?' ('+r+')':''}`:null;
+  }).filter(Boolean);
+}
+
+// ===== GENERATION =====
+async function startGeneration() {
+  const title = document.getElementById('title').value.trim()||'Livre Sans Titre';
+  const author = document.getElementById('author').value.trim()||'Auteur Inconnu';
+  const genre = document.getElementById('genre').value;
+  const setting = document.getElementById('setting').value.trim();
+  const synopsis = document.getElementById('synopsis').value.trim();
+  const themes = document.getElementById('themes').value.trim();
+  const style = document.getElementById('style').value;
+  const pov = document.getElementById('pov').value;
+  const density = document.getElementById('density').value;
+  const authorNote = document.getElementById('authorNote').value.trim();
+  const pages = parseInt(document.getElementById('pageCount').value)||80;
+  const chars = getCharacters();
+
+  if(!chapters.length){showToast('Ajoutez au moins un chapitre.');return;}
+  if(!synopsis){showToast('Veuillez décrire l\'intrigue principale.');return;}
+
+  novelData = {title,author,genre,setting,synopsis,themes,style,pov,density,authorNote,pages,chars};
+  generatedContent = {};
+
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('progressWrap').classList.add('active');
+  document.getElementById('previewPanel').classList.remove('visible');
+
+  const pagesPerChap = Math.max(2,Math.round(pages/chapters.length));
+  const wordsPerChap = pagesPerChap*400;
+
+  const pc = document.getElementById('progressChapters');
+  pc.innerHTML = chapters.map((ch,i)=>`<div class="p-chapter" id="pch-${i}"><div class="p-dot"></div>Chapitre ${i+1} : ${escHtml(ch.title)||'(sans titre)'}</div>`).join('');
+
+  const audienceNote = currentAudience==='enfant'?' Vocabulaire très simple, phrases courtes, adapté aux enfants 3-10 ans, ton bienveillant et ludique.' :
+    currentAudience==='ado'?' Langage dynamique adapté aux adolescents, avec des références contemporaines.' :
+    currentAudience==='senior'?' Style posé, vocabulaire riche, sujets de maturité.' :
+    currentAudience==='pro'?' Ton professionnel, structuré, avec des exemples pratiques et des exercices.' : '';
+
+  const booktypeNote = currentBooktype==='formation'?' Inclure des objectifs d\'apprentissage, des exercices pratiques et des points clés.' :
+    currentBooktype==='bd'?' Décrire les dialogues, les scènes visuelles, les actions.' :
+    currentBooktype==='album'?' Texte court et poétique, descriptions d\'illustrations.' :
+    currentBooktype==='essai'?' Argumentation structurée avec exemples, citations et conclusion.' : '';
+
+  let allText = [];
+  for(let i=0;i<chapters.length;i++) {
+    const ch = chapters[i];
+    const chTitle = ch.title||`Chapitre ${i+1}`;
+    document.getElementById('progressBar').style.width = ((i/chapters.length)*100)+'%';
+    document.getElementById('progressStatus').textContent = `Rédaction du chapitre ${i+1} / ${chapters.length}…`;
+    document.getElementById(`pch-${i}`)?.classList.add('active');
+
+    const charsStr = chars.length?`\nPersonnages : ${chars.join(', ')}.`:'';
+    const settingStr = setting?`\nCadre : ${setting}.`:'';
+    const noteStr = authorNote?`\nNote : ${authorNote}`:'';
+    const prevSummary = allText.length>0?`\n\nRésumé précédent : ${allText.slice(-1)[0].slice(0,250)}...`:'';
+
+    const prompt = `Tu es un écrivain expert. Écris le chapitre ${i+1}/${chapters.length} d'un ${currentBooktype} intitulé "${title}".
+GENRE : ${genre} | STYLE : ${style} | NARRATION : ${pov} | DENSITÉ : ${density}
+SYNOPSIS : ${synopsis}
+${themes?'THÈMES : '+themes:''}${settingStr}${charsStr}${noteStr}${prevSummary}
+${audienceNote}${booktypeNote}
+Chapitre "${chTitle}" (${i+1}/${chapters.length})${i===0?' — INCIPIT':i===chapters.length-1?' — ÉPILOGUE':''}.
+Écris environ ${Math.round(wordsPerChap)} mots. Contenu riche et littéraire. Pas de titre au début.`;
+
+    try {
+      const text = await callClaude(prompt, Math.min(4000,wordsPerChap*2));
+      generatedContent[i] = {title:chTitle,text};
+      allText.push(text);
+      document.getElementById(`pch-${i}`)?.classList.remove('active');
+      document.getElementById(`pch-${i}`)?.classList.add('done');
+    } catch(e) {
+      showToast(`Erreur chapitre ${i+1}: ${e.message}`);
+      generatedContent[i] = {title:chTitle,text:`[Erreur: ${e.message}]`};
+      document.getElementById(`pch-${i}`)?.classList.remove('active');
+    }
+  }
+
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('progressStatus').textContent = '✦ Livre terminé !';
+  document.getElementById('genBtn').disabled = false;
+  renderPreview();
+  showToast('✦ Votre livre est prêt !', 5000);
+}
+
+// ===== CLAUDE API =====
+// Calls go through /api/proxy (Vercel serverless function) to keep the API key secret
+const API_ENDPOINT = '/api/proxy';
+
+async function callClaude(prompt, maxTokens=2000) {
+  const resp = await fetch(API_ENDPOINT, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens,messages:[{role:'user',content:prompt}]})
+  });
+  if(!resp.ok){const err=await resp.json().catch(()=>({}));throw new Error(err.error?.message||`HTTP ${resp.status}`);}
+  const data=await resp.json();
+  return data.content?.map(b=>b.text||'').join('')||'';
+}
+
+// ===== PREVIEW =====
+function renderPreview() {
+  const panel = document.getElementById('previewPanel');
+  const book = document.getElementById('previewBook');
+  panel.classList.add('visible');
+  let html = `<h2 style="text-align:center;font-size:2rem;border:none;margin-bottom:0.25rem">${escHtml(novelData.title)}</h2>
+  <p style="text-align:center;color:var(--text3);font-style:italic;margin-bottom:2rem;text-indent:0">${escHtml(novelData.author)}</p>`;
+  for(let i=0;i<chapters.length;i++){
+    const ch=generatedContent[i]; if(!ch) continue;
+    html+=`<h2>Chapitre ${i+1} — ${escHtml(ch.title)}</h2>`;
+    ch.text.split(/\n+/).filter(p=>p.trim()).forEach(p=>{html+=`<p>${escHtml(p)}</p>`;});
+  }
+  book.innerHTML=html;
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ===== EXPORTS =====
+function doExport(format) {
+  if(!Object.keys(generatedContent).length){showToast('Générez d\'abord le livre !');return;}
+  if(format==='pdf') exportPDF();
+  else if(format==='docx') exportDOCX();
+  else if(format==='epub') exportEPUB();
+  else if(format==='txt') exportTXT();
+}
+
+// --- PDF ---
+async function exportPDF() {
+  const {jsPDF} = window.jspdf;
+  showToast('Génération du PDF…',8000);
+  const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
+  const mL=22,mR=22,mT=28,mB=28,textW=W-mL-mR;
+  let y=mT, pageNum=1;
+
+  const addHdr = ()=>{
+    doc.setFontSize(8); doc.setTextColor(100,80,160); doc.setFont('times','italic');
+    doc.text(novelData.title,mL,13); doc.text(String(pageNum),W-mR,13,{align:'right'});
+    doc.setDrawColor(100,80,160); doc.setLineWidth(0.3); doc.line(mL,16,W-mR,16);
+    doc.setTextColor(20,15,30);
+  };
+  const newPage=()=>{doc.addPage();pageNum++;y=mT+6;addHdr();};
+  const write=(text,fs,style,color,align='left',bef=0,aft=0)=>{
+    y+=bef; if(y>H-mB-8) newPage();
+    doc.setFontSize(fs); doc.setFont('times',style); doc.setTextColor(...color);
+    const lines=doc.splitTextToSize(text,textW);
+    lines.forEach((line,li)=>{if(y>H-mB) newPage(); doc.text(line,align==='center'?W/2:mL,y,{align}); y+=fs*0.43;});
+    y+=aft;
+  };
+
+  // Cover page
+  doc.setFillColor(10,10,20); doc.rect(0,0,W,H,'F');
+
+  // Gradient effect via overlays
+  doc.setFillColor(30,0,60); doc.setGState(new doc.GState({opacity:0.6}));
+  doc.rect(0,0,W*0.5,H,'F');
+  doc.setFillColor(0,30,60); doc.rect(W*0.5,0,W*0.5,H,'F');
+  doc.setGState(new doc.GState({opacity:1}));
+
+  // Cover image if generated
+  if(coverGenerated) {
+    try {
+      const canvas = document.getElementById('coverCanvas');
+      const imgData = canvas.toDataURL('image/jpeg',0.9);
+      doc.addImage(imgData,'JPEG',mL-5,20,W-mL-mR+10,H-40);
+    } catch(e){}
+  }
+
+  // Overlay gradient for text
+  doc.setFillColor(10,10,20); doc.setGState(new doc.GState({opacity:0.65})); doc.rect(0,H/2-40,W,80,'F');
+  doc.setGState(new doc.GState({opacity:1}));
+
+  doc.setDrawColor(124,58,237); doc.setLineWidth(0.5); doc.rect(8,8,W-16,H-16);
+  doc.setDrawColor(6,182,212); doc.setLineWidth(0.2); doc.rect(11,11,W-22,H-22);
+
+  doc.setFontSize(32); doc.setFont('times','bolditalic'); doc.setTextColor(220,200,255);
+  const tlines=doc.splitTextToSize(novelData.title,W-50);
+  let cy=H/2-tlines.length*7;
+  tlines.forEach(l=>{doc.text(l,W/2,cy,{align:'center'});cy+=13;});
+
+  if(novelData.author){
+  }
+
+  doc.setFontSize(8); doc.setTextColor(80,60,120); doc.setFont('times','normal');
+  doc.text(novelData.genre, W/2, H-25,{align:'center'});
+  doc.text(String(new Date().getFullYear()), W/2, H-18,{align:'center'});
+
+  // TOC
+  doc.addPage(); pageNum=1; y=mT; addHdr();
+  write('Table des Matières',18,'bolditalic',[80,50,140],'center',5,10);
+  doc.setDrawColor(100,60,180); doc.line(mL,y-2,W-mR,y-2); y+=4;
+  chapters.forEach((ch,i)=>{
+    if(y>H-mB) newPage();
+    doc.setFontSize(10); doc.setFont('times','italic'); doc.setTextColor(60,40,100);
+    doc.text(`${i+1}.`,mL,y);
+    doc.setFont('times','normal'); doc.setTextColor(30,20,50);
+    doc.text(ch.title||`Chapitre ${i+1}`,mL+8,y); y+=7;
+  });
+
+  // Chapters
+  for(let i=0;i<chapters.length;i++){
+    const ch=generatedContent[i]; if(!ch) continue;
+    doc.addPage(); pageNum++; y=H/3;
+    doc.setFontSize(11); doc.setFont('times','italic'); doc.setTextColor(120,80,200);
+    doc.text(`Chapitre ${i+1}`,W/2,y,{align:'center'}); y+=10;
+    doc.setFontSize(22); doc.setFont('times','bolditalic'); doc.setTextColor(30,20,50);
+    doc.splitTextToSize(ch.title,W-60).forEach(l=>{doc.text(l,W/2,y,{align:'center'});y+=10;});
+    doc.setTextColor(120,80,200); doc.setFontSize(14); doc.text('— ✦ —',W/2,y+6,{align:'center'});
+
+    doc.addPage(); pageNum++; y=mT+6; addHdr();
+    ch.text.split(/\n+/).filter(p=>p.trim()).forEach(para=>{
+      if(y>H-mB) newPage();
+      doc.setFontSize(11); doc.setFont('times','normal'); doc.setTextColor(20,15,30);
+      doc.splitTextToSize('     '+para,textW).forEach(line=>{if(y>H-mB)newPage();doc.text(line,mL,y);y+=5.8;});
+      y+=2;
+    });
+  }
+
+  const fn=(novelData.title||'livre').replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.pdf';
+  doc.save(fn);
+  showToast('📕 PDF téléchargé !',4000);
+}
+
+// --- DOCX (HTML→Blob) ---
+function exportDOCX() {
+  showToast('Génération du document Word…',3000);
+  let body = `<h1 style="text-align:center">${novelData.title}</h1>
+<p style="text-align:center"><em>${novelData.author}</em></p>
+<p style="text-align:center"><em>${novelData.genre}</em></p>
+<hr/>
+<h2>Table des matières</h2>
+<ul>`;
+  chapters.forEach((ch,i)=>{body+=`<li>Chapitre ${i+1} — ${escHtml(ch.title||'')}</li>`;});
+  body+='</ul><hr/>';
+  for(let i=0;i<chapters.length;i++){
+    const ch=generatedContent[i]; if(!ch) continue;
+    body+=`<h2>Chapitre ${i+1} — ${escHtml(ch.title)}</h2>`;
+    ch.text.split(/\n+/).filter(p=>p.trim()).forEach(p=>{body+=`<p style="text-indent:2em;text-align:justify">${escHtml(p)}</p>`;});
+  }
+
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8"><title>${novelData.title}</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>90</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>body{font-family:'Times New Roman',serif;font-size:12pt;line-height:1.8}h1{font-size:24pt;text-align:center}h2{font-size:16pt;color:#4c1d95;margin-top:2em}p{margin-bottom:0.8em}hr{border-color:#ddd}</style>
+</head><body>${body}</body></html>`;
+
+  const blob = new Blob(['\ufeff',html],{type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=(novelData.title||'livre').replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.doc';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('📘 Document Word téléchargé !',4000);
+}
+
+// --- EPUB (HTML zip-like) ---
+function exportEPUB() {
+  showToast('Génération ePub…',3000);
+  let content = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="UTF-8"/><title>${novelData.title}</title>
+<style>body{font-family:Georgia,serif;font-size:1em;line-height:1.8;margin:2em}h1{text-align:center;color:#4c1d95}h2{color:#6d28d9;margin-top:2em}p{text-indent:2em;margin-bottom:0.8em}</style>
+</head><body>
+<h1>${novelData.title}</h1><p style="text-align:center"><em>${novelData.author}</em></p><hr/>`;
+
+  for(let i=0;i<chapters.length;i++){
+    const ch=generatedContent[i]; if(!ch) continue;
+    content+=`<h2>Chapitre ${i+1} — ${escHtml(ch.title)}</h2>`;
+    ch.text.split(/\n+/).filter(p=>p.trim()).forEach(p=>{content+=`<p>${escHtml(p)}</p>`;});
+  }
+  content+='</body></html>';
+
+  const blob=new Blob([content],{type:'application/xhtml+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=(novelData.title||'livre').replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.xhtml';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('📗 ePub / XHTML téléchargé !',4000);
+}
+
+// --- TXT ---
+function exportTXT() {
+  let txt=`${novelData.title}\n${'='.repeat(novelData.title.length)}\nPar ${novelData.author}\n\n`;
+  for(let i=0;i<chapters.length;i++){
+    const ch=generatedContent[i]; if(!ch) continue;
+    txt+=`\n\nCHAPITRE ${i+1} — ${ch.title.toUpperCase()}\n${'─'.repeat(40)}\n\n${ch.text}\n`;
+  }
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=(novelData.title||'livre').replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.txt';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('📄 Texte téléchargé !',3000);
+}
+
+// ===== VOICE =====
+let voiceTargetId=null, voiceRecognition=null, voiceFinalText='', voiceInterimText='', voiceIsListening=false;
+
+function openVoiceModal(fieldId,fieldLabel) {
+  voiceTargetId=fieldId; voiceFinalText=''; voiceInterimText='';
+  document.getElementById('voiceFieldLabel').textContent=fieldLabel;
+  document.getElementById('voiceTranscript').innerHTML='<span class="voice-transcript-placeholder">Votre dictée apparaîtra ici…</span>';
+  document.getElementById('voiceInsertBtn').disabled=true;
+  document.getElementById('voiceError').textContent='';
+  document.getElementById('voiceOrbStatus').textContent='Cliquez pour commencer';
+  document.getElementById('voiceOrbStatus').classList.remove('active');
+  document.getElementById('voiceOrb').classList.remove('listening');
+  document.getElementById('voiceOrb').textContent='🎙';
+  document.getElementById('voiceWave').classList.remove('active');
+  document.getElementById('voiceBackdrop').classList.add('open');
+  document.addEventListener('keydown',voiceEscHandler);
+}
+function closeVoiceModal(){stopListening();document.getElementById('voiceBackdrop').classList.remove('open');document.removeEventListener('keydown',voiceEscHandler);voiceTargetId=null;}
+function handleBackdropClick(e){if(e.target===document.getElementById('voiceBackdrop'))closeVoiceModal();}
+function voiceEscHandler(e){if(e.key==='Escape')closeVoiceModal();}
+function toggleListening(){if(voiceIsListening)stopListening();else startListening();}
+
+function startListening(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){document.getElementById('voiceError').textContent='⚠ Non supporté (utilisez Chrome ou Edge).';return;}
+  voiceRecognition=new SR(); voiceRecognition.lang='fr-FR'; voiceRecognition.continuous=true; voiceRecognition.interimResults=true;
+  voiceRecognition.onstart=()=>{voiceIsListening=true;document.getElementById('voiceOrb').classList.add('listening');document.getElementById('voiceOrb').textContent='⏹';document.getElementById('voiceOrbStatus').textContent='Écoute en cours…';document.getElementById('voiceOrbStatus').classList.add('active');document.getElementById('voiceWave').classList.add('active');document.getElementById('voiceError').textContent='';};
+  voiceRecognition.onresult=(e)=>{voiceFinalText='';voiceInterimText='';for(let i=0;i<e.results.length;i++){if(e.results[i].isFinal)voiceFinalText+=e.results[i][0].transcript;else voiceInterimText+=e.results[i][0].transcript;}renderTranscript();};
+  voiceRecognition.onerror=(e)=>{const m={'not-allowed':'Accès micro refusé.','no-speech':'Aucune parole détectée.','network':'Erreur réseau.','audio-capture':'Micro introuvable.'};document.getElementById('voiceError').textContent='⚠ '+(m[e.error]||'Erreur: '+e.error);stopListening();};
+  voiceRecognition.onend=()=>{voiceIsListening=false;document.getElementById('voiceOrb').classList.remove('listening');document.getElementById('voiceOrb').textContent='🎙';document.getElementById('voiceOrbStatus').textContent=voiceFinalText?'Terminé':'Cliquez pour commencer';document.getElementById('voiceOrbStatus').classList.remove('active');document.getElementById('voiceWave').classList.remove('active');renderTranscript();};
+  voiceRecognition.start();
+}
+function stopListening(){if(voiceRecognition){try{voiceRecognition.stop();}catch(e){}voiceRecognition=null;}voiceIsListening=false;document.getElementById('voiceOrb').classList.remove('listening');document.getElementById('voiceOrb').textContent='🎙';document.getElementById('voiceWave').classList.remove('active');}
+function renderTranscript(){
+  const box=document.getElementById('voiceTranscript');
+  if(!voiceFinalText&&!voiceInterimText){box.innerHTML='<span class="voice-transcript-placeholder">Votre dictée apparaîtra ici…</span>';document.getElementById('voiceInsertBtn').disabled=true;return;}
+  let html=''; if(voiceFinalText)html+=escHtml(voiceFinalText); if(voiceInterimText)html+=`<span class="interim"> ${escHtml(voiceInterimText)}</span>`;
+  box.innerHTML=html; box.scrollTop=box.scrollHeight; document.getElementById('voiceInsertBtn').disabled=!voiceFinalText;
+}
+function insertTranscript(){
+  if(!voiceTargetId||!voiceFinalText)return;
+  const el=document.getElementById(voiceTargetId); if(!el)return;
+  const cur=el.value.trim();
+  el.value=cur?cur+' '+voiceFinalText.trim():voiceFinalText.trim();
+  el.dispatchEvent(new Event('input')); el.focus();
+  closeVoiceModal(); showToast('✦ Texte inséré !',2500);
+}
+
+updateStats();
+</script>
+</body>
+</html>
